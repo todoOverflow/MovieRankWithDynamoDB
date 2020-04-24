@@ -10,6 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Amazon.DynamoDBv2;
+using Swashbuckle.AspNetCore.Swagger;
+using MediatR;
+using AutoMapper;
+using Application.ObjectPersistenceModel;
 
 namespace Api
 {
@@ -26,6 +31,13 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddAWSService<IAmazonDynamoDB>(Configuration.GetAWSOptions());
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "MovieRank with DynamoDB", Version = "v1" });
+            });
+            services.AddMediatR(typeof(GetAll.Query).Assembly);
+            services.AddAutoMapper(typeof(GetAll.Query).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,8 +52,13 @@ namespace Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             app.UseMvc();
         }
     }
