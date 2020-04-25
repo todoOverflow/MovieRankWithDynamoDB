@@ -1,6 +1,8 @@
 using Application.DatabaseModels;
 using AutoMapper;
 using Domain.Communication;
+using System;
+using static Application.ObjectPersistenceModel.AddOne;
 
 namespace Application.ObjectPersistenceModel
 {
@@ -9,6 +11,8 @@ namespace Application.ObjectPersistenceModel
         public MappingProfile()
         {
             CreateMap<MovieRank, MovieRankResponse>();
+            CreateMap<AddCommand, MovieRank>()
+                .ForMember(mr => mr.RankedDateTime, opt => opt.MapFrom(ac => DateTime.UtcNow.ToString()));
         }
     }
 }

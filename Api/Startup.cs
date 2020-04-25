@@ -15,6 +15,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using MediatR;
 using AutoMapper;
 using Application.ObjectPersistenceModel;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Api
 {
@@ -52,6 +55,17 @@ namespace Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseExceptionHandler(
+                appBuilder => appBuilder.Run(async context =>
+                {
+                    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                    var exceptions = exceptionHandlerPathFeature?.Error;
+
+                    var result = JsonConvert.SerializeObject(new { error = exceptions.Message });
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync(result);
+                })
+            );
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
