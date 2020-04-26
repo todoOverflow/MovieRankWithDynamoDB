@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
+using AutoMapper;
 using MediatR;
-
-
-namespace Application.ObjectPersistenceModel
+namespace Application.DocumentModel
 {
     public class UpdateRank
     {
@@ -18,21 +17,22 @@ namespace Application.ObjectPersistenceModel
 
         public class Handler : IRequestHandler<UpdateRankCommand>
         {
-            private readonly DynamoDBContext _dbContext;
+            private static string TableName = "MovieRank";
+            private readonly Table _table;
             public Handler(IAmazonDynamoDB client)
             {
-                _dbContext = new DynamoDBContext(client);
+                _table = Table.LoadTable(client, TableName);
             }
             public async Task<Unit> Handle(UpdateRankCommand request, CancellationToken cancellationToken)
             {
-                var response = await _dbContext.LoadAsync<MovieRank>(request.UserId, request.MovieName);
+                var response = await _table.GetItemAsync(request.UserId, request.MovieName);
                 if (response == null)
                 {
                     throw new System.Exception($"{request.UserId} never ranked {request.MovieName}");
                 }
 
-                response.Ranking = request.Ranking;
-                await _dbContext.SaveAsync<MovieRank>(response);
+                response["Ranking"] = request.Ranking;
+                await _table.UpdateItemAsync(response);
                 return Unit.Value;
             }
         }

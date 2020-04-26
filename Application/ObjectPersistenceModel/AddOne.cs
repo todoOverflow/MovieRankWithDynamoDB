@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Application.DatabaseModels;
 using AutoMapper;
 using MediatR;
 

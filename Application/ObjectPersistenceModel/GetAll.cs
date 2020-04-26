@@ -1,6 +1,5 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Application.DatabaseModels;
 using AutoMapper;
 using Domain.Communication;
 using MediatR;

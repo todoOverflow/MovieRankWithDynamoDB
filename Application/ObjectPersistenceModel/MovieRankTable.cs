@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace Application.DatabaseModels
+namespace Application.ObjectPersistenceModel
 {
+
     public class MovieRank
     {
         [DynamoDBHashKey]

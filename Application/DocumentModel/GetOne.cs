@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using AutoMapper;
 using Domain.Communication;
 using MediatR;
-namespace Application.ObjectPersistenceModel
+namespace Application.DocumentModel
 {
     public class GetOne
     {
@@ -16,18 +17,17 @@ namespace Application.ObjectPersistenceModel
         }
         public class Handler : IRequestHandler<Query, MovieRankResponse>
         {
-            private readonly DynamoDBContext _dbContext;
-            private readonly IMapper _mapper;
-            public Handler(IAmazonDynamoDB client, IMapper mapper)
+            private static string TableName = "MovieRank";
+            private readonly Table _table;
+            public Handler(IAmazonDynamoDB client)
             {
-                _mapper = mapper;
-                _dbContext = new DynamoDBContext(client);
+                _table = Table.LoadTable(client, TableName);
             }
 
             public async Task<MovieRankResponse> Handle(Query request, CancellationToken cancellationToken)
             {
-                var response = await _dbContext.LoadAsync<MovieRank>(request.UserId, request.MovieName);
-                return _mapper.Map<MovieRank, MovieRankResponse>(response);
+                var response = await _table.GetItemAsync(request.UserId, request.MovieName);
+                return MappingProfile.ToMovieRankResponse(response);
             }
         }
     }

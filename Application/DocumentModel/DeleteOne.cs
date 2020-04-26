@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
+using AutoMapper;
+using Domain.Communication;
 using MediatR;
 
-namespace Application.ObjectPersistenceModel
+namespace Application.DocumentModel
 {
     public class DeleteOne
     {
@@ -15,15 +18,15 @@ namespace Application.ObjectPersistenceModel
         }
         public class Handler : IRequestHandler<DeleteCommand>
         {
-            private readonly DynamoDBContext _dbContext;
+            private static string TableName = "MovieRank";
+            private readonly Table _table;
             public Handler(IAmazonDynamoDB client)
             {
-                _dbContext = new DynamoDBContext(client);
+                _table = Table.LoadTable(client, TableName);
             }
-
             public async Task<Unit> Handle(DeleteCommand request, CancellationToken cancellationToken)
             {
-                await _dbContext.DeleteAsync<MovieRank>(request.UserId, request.MovieName);
+                await _table.DeleteItemAsync(request.UserId, request.MovieName);
                 return Unit.Value;
             }
         }

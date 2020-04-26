@@ -1,4 +1,3 @@
-using Application.DatabaseModels;
 using AutoMapper;
 using Domain.Communication;
 using System;

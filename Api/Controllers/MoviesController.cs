@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.ObjectPersistenceModel;
+//using Application.ObjectPersistenceModel;
+using Application.DocumentModel;
 using Domain.Communication;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
