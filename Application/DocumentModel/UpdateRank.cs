@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
@@ -32,6 +33,7 @@ namespace Application.DocumentModel
                 }
 
                 response["Ranking"] = request.Ranking;
+                response["RankedDateTime"] = DateTime.UtcNow.ToString();
                 await _table.UpdateItemAsync(response);
                 return Unit.Value;
             }

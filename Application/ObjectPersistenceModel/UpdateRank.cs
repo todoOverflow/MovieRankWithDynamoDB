@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
@@ -32,6 +33,7 @@ namespace Application.ObjectPersistenceModel
                 }
 
                 response.Ranking = request.Ranking;
+                response.RankedDateTime = DateTime.UtcNow.ToString();
                 await _dbContext.SaveAsync<MovieRank>(response);
                 return Unit.Value;
             }
